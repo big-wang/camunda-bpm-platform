@@ -20,11 +20,17 @@ import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureOnlyOneNotNull;
 
 import org.camunda.bpm.engine.authorization.Authorization;
+import org.camunda.bpm.engine.authorization.Resources;
 import org.camunda.bpm.engine.history.UserOperationLogEntry;
+import org.camunda.bpm.engine.impl.history.event.HistoryEvent;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.AuthorizationEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.AuthorizationManager;
+
+import java.util.Date;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * @author Daniel Meyer
@@ -50,6 +56,10 @@ public class SaveAuthorizationCmd implements Command<Authorization> {
 
     authorizationManager.validateResourceCompatibility(authorization);
 
+    if (isHistoricTaskInstanceResource()) {
+      provideRemovalTime(() -> getHistoricTaskInstance(commandContext));
+    }
+
     String operationType = null;
     AuthorizationEntity previousValues = null;
     if(authorization.getId() == null) {
@@ -63,6 +73,38 @@ public class SaveAuthorizationCmd implements Command<Authorization> {
     commandContext.getOperationLogManager().logAuthorizationOperation(operationType, authorization, previousValues);
     
     return authorization;
+  }
+
+  protected void provideRemovalTime(Supplier<HistoryEvent> supplier) {
+    HistoryEvent historicInstance = supplier.get();
+
+    if (historicInstance != null) {
+      String rootProcessInstanceId = historicInstance.getRootProcessInstanceId();
+      authorization.setRootProcessInstanceId(rootProcessInstanceId);
+
+      Date removalTime = historicInstance.getRemovalTime();
+      authorization.setRemovalTime(removalTime);
+
+    } else { // reset
+      authorization.setRootProcessInstanceId(null);
+      authorization.setRemovalTime(null);
+
+    }
+  }
+
+  protected HistoryEvent getHistoricTaskInstance(CommandContext commandContext) {
+    String historicTaskInstanceId = authorization.getResourceId();
+
+    if (historicTaskInstanceId == null) {
+      return null;
+    }
+
+    return commandContext.getHistoricTaskInstanceManager()
+        .findHistoricTaskInstanceById(historicTaskInstanceId);
+  }
+
+  protected boolean isHistoricTaskInstanceResource() {
+    return Objects.equals(Resources.HISTORIC_TASK.resourceType(), authorization.getResource());
   }
 
 }
