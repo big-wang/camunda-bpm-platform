@@ -41,6 +41,7 @@
     {"name": "Process instance"},
     {"name": "Signal"},
     {"name": "Schema Log"},
+    {"name": "Task Local Variable"},
     {"name": "Version"}
   ],
   "paths": {
