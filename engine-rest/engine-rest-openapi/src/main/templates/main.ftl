@@ -40,6 +40,7 @@
     {"name": "Process instance"},
     {"name": "Signal"},
     {"name": "Schema Log"},
+    {"name": "Task Variable"},
     {"name": "Version"}
   ],
   "paths": {
