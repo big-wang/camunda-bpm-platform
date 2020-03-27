@@ -121,7 +121,6 @@ public class ProcessDefinitionQueryTest extends AbstractDefinitionQueryTest {
         Deployment singleDeployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
         // all results should have a later deployment time than the one used in the query
         assertThat(singleDeployment.getDeploymentTime()).isAfter(deployment.getDeploymentTime());
-        System.out.println("Hallo Sibylle");
       }
     }
   }
