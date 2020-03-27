@@ -18,6 +18,7 @@ package org.camunda.bpm.engine.impl.batch.update;
 
 import java.util.List;
 
+import org.camunda.bpm.engine.impl.batch.DeploymentMappingJsonConverter;
 import org.camunda.bpm.engine.impl.batch.DeploymentMappings;
 import org.camunda.bpm.engine.impl.json.JsonObjectConverter;
 import org.camunda.bpm.engine.impl.util.JsonUtil;
@@ -35,7 +36,7 @@ public class UpdateProcessInstancesSuspendStateBatchConfigurationJsonConverter e
     JsonObject json = JsonUtil.createObject();
 
     JsonUtil.addListField(json, PROCESS_INSTANCE_IDS, configuration.getIds());
-    JsonUtil.addListField(json, PROCESS_INSTANCE_ID_MAPPINGS, DeploymentMappings.toStringList(configuration.getIdMappings()));
+    JsonUtil.addListField(json, PROCESS_INSTANCE_ID_MAPPINGS, DeploymentMappingJsonConverter.INSTANCE, configuration.getIdMappings());
     JsonUtil.addField(json, SUSPENDING, configuration.getSuspended());
     return json;
   }
@@ -53,6 +54,6 @@ public class UpdateProcessInstancesSuspendStateBatchConfigurationJsonConverter e
   }
 
   protected DeploymentMappings readMappings(JsonObject jsonObject) {
-    return DeploymentMappings.fromStringList(JsonUtil.asStringList(JsonUtil.getArray(jsonObject, PROCESS_INSTANCE_ID_MAPPINGS)));
+    return JsonUtil.asList(JsonUtil.getArray(jsonObject, PROCESS_INSTANCE_ID_MAPPINGS), DeploymentMappingJsonConverter.INSTANCE, DeploymentMappings::new);
   }
 }

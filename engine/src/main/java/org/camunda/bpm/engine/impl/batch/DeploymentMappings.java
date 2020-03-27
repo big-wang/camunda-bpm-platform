@@ -17,8 +17,6 @@
 package org.camunda.bpm.engine.impl.batch;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * List of aggregated information on deployment ids and the number of related resources
@@ -60,16 +58,4 @@ public class DeploymentMappings extends ArrayList<DeploymentMapping> {
     return overallIdCount;
   }
 
-  /** @return the mapping information as List of Strings */
-  public static List<String> toStringList(DeploymentMappings infoList) {
-    return infoList == null ? null : infoList.stream().map(DeploymentMapping::toString).collect(Collectors.toList());
-  }
-
-  /**
-   * @return the List of String-based mapping information transformed into a
-   *         list of mapping information objects
-   */
-  public static DeploymentMappings fromStringList(List<String> infoList) {
-    return infoList.stream().map(DeploymentMapping::fromString).collect(Collectors.toCollection(DeploymentMappings::new));
-  }
 }

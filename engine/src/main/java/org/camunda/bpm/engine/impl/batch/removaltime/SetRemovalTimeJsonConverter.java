@@ -18,6 +18,7 @@ package org.camunda.bpm.engine.impl.batch.removaltime;
 
 import com.google.gson.JsonObject;
 
+import org.camunda.bpm.engine.impl.batch.DeploymentMappingJsonConverter;
 import org.camunda.bpm.engine.impl.batch.DeploymentMappings;
 import org.camunda.bpm.engine.impl.json.JsonObjectConverter;
 import org.camunda.bpm.engine.impl.util.JsonUtil;
@@ -42,7 +43,7 @@ public class SetRemovalTimeJsonConverter extends JsonObjectConverter<SetRemovalT
     JsonObject json = JsonUtil.createObject();
 
     JsonUtil.addListField(json, IDS, configuration.getIds());
-    JsonUtil.addListField(json, ID_MAPPINGS, DeploymentMappings.toStringList(configuration.getIdMappings()));
+    JsonUtil.addListField(json, ID_MAPPINGS, DeploymentMappingJsonConverter.INSTANCE, configuration.getIdMappings());
     JsonUtil.addDateField(json, REMOVAL_TIME, configuration.getRemovalTime());
     JsonUtil.addField(json, HAS_REMOVAL_TIME, configuration.hasRemovalTime());
     JsonUtil.addField(json, IS_HIERARCHICAL, configuration.isHierarchical());
@@ -57,7 +58,8 @@ public class SetRemovalTimeJsonConverter extends JsonObjectConverter<SetRemovalT
 
     List<String> instanceIds =  JsonUtil.asStringList(JsonUtil.getArray(jsonObject, IDS));
 
-    DeploymentMappings mappings = DeploymentMappings.fromStringList(JsonUtil.asStringList(JsonUtil.getArray(jsonObject, ID_MAPPINGS)));
+    DeploymentMappings mappings = JsonUtil.asList(JsonUtil.getArray(jsonObject, ID_MAPPINGS),
+        DeploymentMappingJsonConverter.INSTANCE, DeploymentMappings::new);
 
     boolean hasRemovalTime = JsonUtil.getBoolean(jsonObject, HAS_REMOVAL_TIME);
 

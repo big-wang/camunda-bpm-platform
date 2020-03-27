@@ -50,14 +50,6 @@ public class DeploymentMapping {
     count -= numberOfIds;
   }
 
-  protected static DeploymentMapping fromString(String info) {
-    String[] parts = info.split(";");
-    if (parts.length != 2) {
-      throw new IllegalArgumentException("DeploymentMappingInfo must consist of two parts separated by semi-colons, but was: " + info);
-    }
-    return new DeploymentMapping(parts[0], Integer.valueOf(parts[1]));
-  }
-
   @Override
   public String toString() {
     return new StringJoiner(";").add(deploymentId).add(String.valueOf(count)).toString();

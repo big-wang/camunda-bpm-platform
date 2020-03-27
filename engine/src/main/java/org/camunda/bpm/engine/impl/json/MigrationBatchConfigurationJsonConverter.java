@@ -16,6 +16,7 @@
  */
 package org.camunda.bpm.engine.impl.json;
 
+import org.camunda.bpm.engine.impl.batch.DeploymentMappingJsonConverter;
 import org.camunda.bpm.engine.impl.batch.DeploymentMappings;
 import org.camunda.bpm.engine.impl.migration.batch.MigrationBatchConfiguration;
 import org.camunda.bpm.engine.impl.util.JsonUtil;
@@ -38,7 +39,7 @@ public class MigrationBatchConfigurationJsonConverter extends JsonObjectConverte
 
     JsonUtil.addField(json, MIGRATION_PLAN, MigrationPlanJsonConverter.INSTANCE, configuration.getMigrationPlan());
     JsonUtil.addListField(json, PROCESS_INSTANCE_IDS, configuration.getIds());
-    JsonUtil.addListField(json, PROCESS_INSTANCE_ID_MAPPINGS, DeploymentMappings.toStringList(configuration.getIdMappings()));
+    JsonUtil.addListField(json, PROCESS_INSTANCE_ID_MAPPINGS, DeploymentMappingJsonConverter.INSTANCE, configuration.getIdMappings());
     JsonUtil.addField(json, SKIP_LISTENERS, configuration.isSkipCustomListeners());
     JsonUtil.addField(json, SKIP_IO_MAPPINGS, configuration.isSkipIoMappings());
 
@@ -58,6 +59,6 @@ public class MigrationBatchConfigurationJsonConverter extends JsonObjectConverte
   }
 
   protected DeploymentMappings readIdMappings(JsonObject json) {
-    return DeploymentMappings.fromStringList(JsonUtil.asStringList(JsonUtil.getArray(json, PROCESS_INSTANCE_ID_MAPPINGS)));
+    return JsonUtil.asList(JsonUtil.getArray(json, PROCESS_INSTANCE_ID_MAPPINGS), DeploymentMappingJsonConverter.INSTANCE, DeploymentMappings::new);
   }
 }
