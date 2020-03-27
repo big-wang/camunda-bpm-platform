@@ -33,6 +33,9 @@ import org.junit.rules.RuleChain;
 
 public abstract class AbstractDefinitionQueryTest {
 
+  protected final static String FIRST_DEPLOYMENT_NAME = "firstDeployment";
+  protected static final String SECOND_DEPLOYMENT_NAME = "secondDeployment";
+
   protected ProcessEngineRule engineRule = new ProvidedProcessEngineRule();
   protected ProcessEngineTestRule testRule = new ProcessEngineTestRule(engineRule);
   protected ExpectedException exceptionRule = ExpectedException.none();
@@ -52,7 +55,7 @@ public abstract class AbstractDefinitionQueryTest {
 
     deploymentOneId = repositoryService
       .createDeployment()
-      .name("firstDeployment")
+      .name(FIRST_DEPLOYMENT_NAME)
       .addClasspathResource(getResourceOnePath())
       .addClasspathResource(getResourceTwoPath())
       .deploy()
@@ -60,7 +63,7 @@ public abstract class AbstractDefinitionQueryTest {
 
     deploymentTwoId = repositoryService
       .createDeployment()
-      .name("secondDeployment")
+      .name(SECOND_DEPLOYMENT_NAME)
       .addClasspathResource(getResourceOnePath())
       .deploy()
       .getId();
