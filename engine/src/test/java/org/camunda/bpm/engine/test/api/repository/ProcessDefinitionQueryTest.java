@@ -113,18 +113,15 @@ public class ProcessDefinitionQueryTest extends AbstractDefinitionQueryTest {
 
   @Test
   public void testQueryByDeploymentTimeAfter() {
-    // order by time for easier assertions
-    List<Deployment> deployments = repositoryService.createDeploymentQuery().orderByDeploymentTime().asc().list();
+    List<Deployment> deployments = repositoryService.createDeploymentQuery().list();
 
-    for(int i = 0; i < deployments.size(); i++) {
-      Deployment deployment = deployments.get(i);
+    for (Deployment deployment : deployments) {
       List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().deployedAfter(deployment.getDeploymentTime()).list();
-      // deployments are ordered, so the result size should decrease linearly with i
-      assertThat(processDefinitions).hasSize(deployments.size() - (i + 1));
       for (ProcessDefinition processDefinition : processDefinitions) {
         Deployment singleDeployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
         // all results should have a later deployment time than the one used in the query
         assertThat(singleDeployment.getDeploymentTime()).isAfter(deployment.getDeploymentTime());
+        System.out.println("Hallo Sibylle");
       }
     }
   }
